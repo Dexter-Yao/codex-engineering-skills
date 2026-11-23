@@ -1,0 +1,6 @@
+interface:
+  display_name: "Statechart"
+  short_description: "Model-check behavior and show counterexample paths"
+  default_prompt: "Use $statechart to model this flow and replay any counterexample against the implementation."
+policy:
+  allow_implicit_invocation: false
