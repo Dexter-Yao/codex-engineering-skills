@@ -26,6 +26,7 @@ before checking a model. The `--view` module runs as code; use one you wrote or 
 
 ## Write the spec
 
+- In a comparison, use the same example for current behavior and the proposed rules. Ground current behavior in the implementation or observed results. Carry forward the rules already agreed with the reader, and label assumptions that still need a decision.
 - Write each rule that the reader agrees to as an INVARIANT. A rule can be about a screen, a result, a stored value, or a message. If the model has no variable for a rule, add the variable. Never weaken a rule to make it hold.
 - Write `Next` as a disjunction of the actions, such as `YouPressPlay \/ YouPressStop`. If you do not, TLC names every step `Next`.
 - A state with no step out breaks `NoDeadlock`, also when it is a correct end state. When an INVARIANT or a PROPERTY already has that name, the rule is `CHECK_DEADLOCK`. Add to `Next` an action that is true only in the end states and changes nothing, such as `Done == phase \in {"paid", "failed"} /\ UNCHANGED vars`, and give it a label in `step()`.
@@ -43,6 +44,8 @@ To show the reader's words, the view exports `state(vars)`. The value that `stat
 Label each state with what the reader can see or cares about, such as "Paying" or "Lease held, write pending". Keep variable names out of labels. In `vars`, a TLA+ sequence is an object with keys from 1, so `v.pc[1]` is `pc[1]`. A set is an array.
 
 The view can also export `step(action, from, to)`. It gets the TLC action name and the values before and after the step, and it returns the label of the arrow. Write each step label as the user sees it happen, such as "you press play" or "the connect fails". Do not name the code or the TLA+ action. Two actions that end the same in the chart get the same label, so that they share one arrow.
+
+Name the action and its consequence when the difference matters. For example, use `you confirm the revised dates` and `both bookings move` in place of generic labels such as `resolve conflict` and `updated`. If two versions share a state or action, use the same words for it in both charts.
 
 When a step can occur only in some conditions, end its label with the condition in brackets, in the reader's words, such as `you press play [while the file loads]`. In a regions chart, the command writes the condition on the other regions on the arrow, in the words of their labels, such as `[when Offline]`. Your brackets replace it, and two arrows from one state can then look the same. So in a regions chart, do not write brackets for a condition on another region. When a value that no label shows decides where a step goes, name the result in the label, such as "the roster read fails".
 
@@ -76,7 +79,9 @@ Aim for about 20 arrows or fewer, because a busier chart is hard to read. First 
 
 ## Show the chart
 
-Show `chart.mmd` to the user as a `mermaid` code block. The chart has a budget of 500 states, counted by TLC on the config as written. Above that, the chart draws only the paths to the rules that break, and when no rule breaks, the command writes no `chart.mmd`. It still checks each rule, and the report gives the state count and each bug path. To see the whole graph, make the model smaller.
+Include the contents of each generated `chart.mmd` as a fenced `mermaid` block directly in the conversation. Put a short heading above each chart. For a comparison, show both **Current behavior** and **Proposed rules** inline, in that order, with headings in the reader's language. State the scenario they share and explain what each chart shows next to the chart. Artifact links can accompany the inline blocks.
+
+The chart has a budget of 500 states, counted by TLC on the config as written. Above that, the chart draws only the paths to the rules that break, and when no rule breaks, the command writes no `chart.mmd`. It still checks each rule, and the report gives the state count and each bug path. To see the whole graph, make the model smaller.
 
 Render charts with Pele. When the user asks for an image, or a chart is too large to read as text, follow `references/render.md`. Do not use a different renderer unless the user asks for it.
 
