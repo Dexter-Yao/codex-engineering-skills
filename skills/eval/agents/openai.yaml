@@ -1,0 +1,6 @@
+interface:
+  display_name: "Pstack Eval"
+  short_description: "Compare Agent prompts and skills with blind scoring"
+  default_prompt: "Use $eval to compare these two skill variants on the same representative tasks."
+policy:
+  allow_implicit_invocation: false

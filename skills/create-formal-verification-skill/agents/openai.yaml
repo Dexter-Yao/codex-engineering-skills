@@ -1,0 +1,6 @@
+interface:
+  display_name: "Create Formal Verification Skill"
+  short_description: "Build a repeatable check for one critical property"
+  default_prompt: "Use $create-formal-verification-skill to verify one critical property in this codebase."
+policy:
+  allow_implicit_invocation: false

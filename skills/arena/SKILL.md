@@ -1,0 +1,51 @@
+---
+name: arena
+description: "Spawn N parallel candidates at the same task, pick a base, graft the strongest parts of the losers into it. Use for $arena, 'arena this', 'throw it in the arena', or when one attempt at a non-trivial artifact would lock in the wrong shape."
+---
+
+Before using this skill, read the shared [Codex runtime contract](../poteto-mode/references/codex-runtime.md) once per run. Resolve bundled skills by package path and follow that contract for tools, models, history, scheduling, and permissions.
+
+# Arena
+
+Open a todolist with one entry per phase (Frame, Fan out, Cross-judge, Pick, Graft, Verify) before launching anything.
+
+## Phase A: Frame
+
+Every candidate gets the same prompt, so the prompt is the contract.
+
+1. State the artifact each candidate is producing.
+2. Derive the rubric. State what success looks like for *this* task, then turn it into 3-6 concrete gradeable criteria. The rubric is the picker's tool in Phase D. Candidates only see the task.
+3. Resolve the `arena runners` panel through the runtime Models contract. Default to two independent inherited-model candidates. Preserve the configured number of seats and use a rolling window. For architecture use the `architect runners` panel. Report same-model diversity honestly. Choose reasoning effort and speed per the runtime Models contract.
+4. Assign absolute output paths. Explicitly create a separate worktree and branch for each candidate that writes code, with one writer per checkout. For standalone artifacts, assign separate scratch directories such as `/tmp/arena-<slug>/candidate-<n>/`, per the **separate-before-serializing-shared-state** principle skill. A native delegate does not automatically receive an isolated worktree.
+
+## Phase B: Fan out
+
+Dispatch N subagents through a rolling window within the available worker limit using asynchronous native delegation, each with the task, the path to the shared grounding, its own output path, and instructions to produce the artifact and a short rationale naming the alternatives it considered and what it rejected.
+
+If a candidate produces no output, proceed with N-1 and note the dropout.
+
+## Phase C: Cross-judge
+
+After all Phase B candidates complete, resolve the `arena cross-judge pool` in `<repo>/.codex/pstack/models.json` through the runtime Models contract. Try supported entries from a known different vendor than the parent's, in pool order. `auto` and `inherit-parent` resolve to the parent, so they cannot supply that judge. Different model families from the same vendor do not qualify. Use vendor identity known from the host; do not guess vendors from provider-specific slug rules or substitute an unconfigured provider. If no eligible entry can run, or the parent's vendor is unknown, skip the judge, pick the base alone in Phase D, and say why. A missing pool inherits the parent and therefore skips this cross-vendor judge.
+
+Spawn one read-only native judge only after all candidates stop writing. It sees the rubric and the candidates by path label, scores each criterion, and recommends a base with rationale. It runs in parallel with the parent's reading in Phase D. A rejected explicit choice follows the runtime fallback rules and never silently changes the user's model or effort preferences.
+
+## Phase D: Pick a base
+
+Read every candidate end to end before picking. Score each against the rubric criterion by criterion, not on holistic feel, and compare with the cross-judge when Phase C ran one. Agreement on the base confirms the pick. Disagreement means one of you is biased or the rubric was ambiguous. Read both rationales before deciding.
+
+Pick the base a future maintainer can extend most easily without breaking invariants. When two feel tied, prefer the cleaner boundary or smaller API, per the Laziness Protocol.
+
+## Phase E: Graft
+
+Walk each losing candidate once more for what is worth porting into the base, usually one or two things per candidate, not most of it. Fold each graft in by hand, per the **redesign-from-first-principles** principle skill, so the result stays coherent under one mental model. Don't paste mechanically.
+
+If the candidates converge on one shape, that is strong agreement. Note it and ship the consensus shape. No graft is needed. If they wildly diverge, Phase A was under-specified. Reframe and re-run rather than averaging the divergence.
+
+## Phase F: Verify
+
+Verify the synthesized artifact like any other output, per the **prove-it-works** principle skill. If verification finds a problem the arena missed, either Phase A was wrong (re-frame and re-run) or a candidate caught it and you missed the graft (go back to Phase E). Don't paper over it.
+
+## Outputs
+
+One synthesized artifact, with a short synthesis note alongside naming the base and why, the cross-judge's verdict or that Phase C skipped the judge, each graft with its source candidate, what was rejected and why, any convergence or dropouts, and the verification result.

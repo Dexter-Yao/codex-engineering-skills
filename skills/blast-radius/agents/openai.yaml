@@ -1,0 +1,6 @@
+interface:
+  display_name: "Blast Radius"
+  short_description: "Trace and test the effects of a code change"
+  default_prompt: "Use $blast-radius to review this diff and test the assumption its safety depends on."
+policy:
+  allow_implicit_invocation: false

@@ -1,0 +1,6 @@
+interface:
+  display_name: "Benchmark Checklist"
+  short_description: "Check whether a benchmark supports its claim"
+  default_prompt: "Use $benchmark-checklist to verify this benchmark and its performance claim."
+policy:
+  allow_implicit_invocation: false

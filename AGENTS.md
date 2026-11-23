@@ -1,14 +1,14 @@
-# Statechart Agent Guide
+# Codex Engineering Skills Agent Guide
 
-This repository distributes one Codex skill and its CLI. `skills/statechart/`
-owns invocation, runtime discovery, model checking, rendering and the license
-files that travel with a standalone installation. `examples/timer/` exercises
-the same CLI against real TLC and replays the resulting path against sample code.
+The repository owns the selectable Codex skills, supporting workflows, and
+runnable examples. `catalog.json` is the installation allowlist.
 
-- Keep the upstream revision and adaptations traceable in `skills/statechart/NOTICE.md`.
-- Preserve the upstream corpus and keep the root and skill copies of `LICENSE`
-  byte-identical. Runtime distributions are provisioned separately.
-- Verify runtime or chart changes with the commands in `README.md`, using both
-  the failing model and the passing control. Keep product data and generated
-  output outside the repository.
+- Keep skill instructions and their dependencies under `skills/`. Keep role
+  prompts in `agents/`. Support directories remain available by package path.
+- Keep the standalone Eval entry and Poteto Mode's Eval route on the same
+  playbook. Use the existing module entry point when extending a skill.
+- Keep exact upstream revisions and the scope of each adaptation in `NOTICE.md` or the
+  skill's notice. Preserve the original MIT license and third-party notices.
+- Run `node --test scripts/install-skills.test.mjs` for catalog and installer
+  changes. Use [the Statechart guide](docs/statechart.md) for engine changes.
 - Keep `CLAUDE.md` identical to this file.
